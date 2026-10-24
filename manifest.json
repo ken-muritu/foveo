@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "Foveo",
+  "version": "0.1.0",
+  "description": "Gaze-contingent reading assistant: keeps the line you're reading sharp and softly blurs the rest. All gaze processing stays on your machine.",
+  "minimum_chrome_version": "121",
+  "permissions": ["storage", "tabs", "scripting"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "scripts": ["src/background/service-worker.js"]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "foveo@ken-muritu.dev",
+      "strict_min_version": "109.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "action": {
+    "default_title": "Foveo",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "src/icons/icon16.png",
+      "32": "src/icons/icon32.png",
+      "48": "src/icons/icon48.png",
+      "128": "src/icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "src/icons/icon16.png",
+    "32": "src/icons/icon32.png",
+    "48": "src/icons/icon48.png",
+    "128": "src/icons/icon128.png"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Alt+Shift+F", "mac": "Alt+Shift+F" },
+      "description": "Open the Foveo panel"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "src/content/lines.js",
+        "src/content/fusion.js",
+        "src/content/overlay.js",
+        "src/content/content.js"
+      ],
+      "css": ["src/content/content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

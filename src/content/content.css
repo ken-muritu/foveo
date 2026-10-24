@@ -1,0 +1,61 @@
+/* Foveo — reading-window overlay (PRD §6.5).
+ *
+ * A single fixed layer with backdrop-filter: blur() covers the page; a
+ * gradient mask cuts a soft-edged sharp band around the current line. The
+ * band's top/height are REGISTERED custom properties (@property, <length>),
+ * which lets CSS transitions interpolate them — the window glides between
+ * lines instead of snapping.
+ */
+
+@property --fv-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: -100px;
+}
+@property --fv-h {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+#foveo-root {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none !important;
+}
+
+#foveo-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+
+  backdrop-filter: blur(var(--fv-blur, 6px));
+  -webkit-backdrop-filter: blur(var(--fv-blur, 6px));
+  background: rgba(10, 12, 16, var(--fv-dim, 0.05));
+
+  --fv-mask: linear-gradient(
+    to bottom,
+    #000 calc(var(--fv-top) - var(--fv-soft, 28px)),
+    transparent var(--fv-top),
+    transparent calc(var(--fv-top) + var(--fv-h)),
+    #000 calc(var(--fv-top) + var(--fv-h) + var(--fv-soft, 28px))
+  );
+  -webkit-mask-image: var(--fv-mask);
+  mask-image: var(--fv-mask);
+
+  transition:
+    --fv-top var(--fv-speed, 180ms) cubic-bezier(0.3, 0.7, 0.3, 1),
+    --fv-h var(--fv-speed, 180ms) cubic-bezier(0.3, 0.7, 0.3, 1),
+    opacity 0.25s ease;
+}
+
+#foveo-overlay.fv-on {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #foveo-overlay {
+    transition: opacity 0.25s ease;
+  }
+}

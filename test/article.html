@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Your Eyes Read — Foveo test article</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0;
+    font: 17px/1.65 Georgia, "Times New Roman", serif;
+    color: #1d2126;
+    background: #fbfaf7;
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 56px 24px 120px; }
+  h1 { font-size: 34px; line-height: 1.2; margin: 0 0 8px; }
+  .deck { color: #6b7078; font-size: 19px; margin: 0 0 40px; font-style: italic; }
+  h2 { font-size: 24px; margin: 56px 0 12px; }
+  p { margin: 0 0 18px; }
+  blockquote {
+    margin: 28px 0;
+    padding: 4px 24px;
+    border-left: 3px solid #c9a227;
+    color: #44484e;
+    font-style: italic;
+  }
+  ul { margin: 0 0 18px; padding-left: 24px; }
+  li { margin-bottom: 8px; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin: 20px 0;
+  }
+  .two-col p { font-size: 15px; line-height: 1.6; }
+  small, .fine { font-size: 13px; color: #7a8088; }
+  .rule { border: none; border-top: 1px solid #e3e0d8; margin: 48px 0; }
+  code { font: 14px/1.4 ui-monospace, monospace; background: #f0eee8; padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>How Your Eyes Read</h1>
+<p class="deck">A test article for Foveo — long enough, dense enough, and varied
+enough to put the reading window through its paces. Read it normally and watch
+what stays sharp.</p>
+
+<p>Your eyes do not glide across a page the way a spotlight glides across a stage.
+They jump. Each jump — called a saccade — lasts twenty to forty milliseconds, and
+during it you are functionally blind to the words you are passing over. All of your
+reading happens in the pauses between jumps: the fixations, a quarter-second each,
+during which a small patch of the text is brought into the only part of your retina
+sharp enough to resolve letters.</p>
+
+<p>That patch is called the fovea, and it covers roughly two degrees of your visual
+field — about the width of this word cluster you are looking at now. Everything
+outside it is progressively blurrier, yet you almost never notice, because your
+brain paints in the periphery with confident guesses built from the sharp center.
+This page is doing that to you right now.</p>
+
+<h2>The moving window</h2>
+
+<p>In 1975, George McConkie and Keith Rayner built a machine that turned this trick
+inside out. They tracked a reader's eyes and, on every frame, redrew the text so
+that only a small window around the point of gaze remained legible — everything
+beyond the window was replaced with X's, or scrambled letters, or blanks.</p>
+
+<p>The finding that made the paradigm famous was negative: readers barely noticed.
+With a window of seven or eight characters ahead of fixation and three or four
+behind, reading speed and comprehension held up almost perfectly. Make the window
+smaller and performance collapses; make it bigger than that and it adds nothing.
+Your useful vision while reading is astonishingly small.</p>
+
+<blockquote>“The reader’s eye-movement record shows a series of fixations and
+saccades… the reader obtains information only during fixations.” — Rayner,
+<em>Eye Movements in Reading</em>, 1998</blockquote>
+
+<p>Foveo is a friendly inversion of that laboratory apparatus. Instead of masking
+everything outside the window to study you, it blurs everything outside the window
+to help you: one sharp line, the rest of the page softened, the way your own vision
+already wishes the page looked.</p>
+
+<h2>What a fixation looks like</h2>
+
+<ul>
+  <li><strong>Duration.</strong> A typical fixation lasts 200–250 milliseconds. Skilled
+  readers fixate slightly less; hard text stretches fixations longer.</li>
+  <li><strong>Length.</strong> Each fixation lands about seven to nine characters into
+  the word or words it targets — not on the first letter.</li>
+  <li><strong>Regressions.</strong> Roughly 10–15% of saccades jump backwards to
+  re-read something. This is normal, and a good reading aid must expect it.</li>
+  <li><strong>Skipping.</strong> Short, predictable words like “the” and “of” are
+  often not fixated at all.</li>
+</ul>
+
+<p>If you are reading this article with Foveo turned on, you are exercising every
+one of these behaviors against its fusion stack right now. Your saccades are being
+filtered out so the window doesn't twitch. Your fixations are what move it. When
+you jump back a line, the window should follow after a beat — not instantly,
+because instant would make it chase every flicker.</p>
+
+<hr class="rule">
+
+<h2>The two-column test</h2>
+
+<p class="fine">The section below is deliberately two-columned. Columns are the hard
+case for any line-based overlay — the same vertical position holds two different
+lines, and only your gaze's horizontal position says which one you mean. Read
+across both columns and watch which one stays sharp.</p>
+
+<div class="two-col">
+  <div>
+    <p>Webcam-based gaze estimation is not eye tracking in the laboratory sense.
+    A head-mounted tracker samples at a kilohertz and resolves a fraction of a
+    degree. A webcam, sampling at thirty frames a second and inferring gaze from
+    the shape and shading of a face seen at arm's length, is lucky to hold one
+    to four degrees — forty to one hundred and sixty pixels on a normal monitor.</p>
+    <p>That sounds hopeless until you remember the moving window. Reading does
+    not need pixel-level gaze. It needs line-level gaze: which of these bands of
+    text is the reader looking at? That is a much coarser question, and it is the
+    one Foveo answers.</p>
+  </div>
+  <div>
+    <p>The fusion stack leans on everything besides raw gaze coordinates. The
+    layout of text itself is a prior: lines run left to right, then top to
+    bottom, and the next fixation is overwhelmingly likely to be near the
+    current one. The mouse cursor, when it moves, points where you are about
+    to look. And when you select a sentence, you have told the system the truth
+    about where you were looking more precisely than any camera could.</p>
+    <p>Each of these signals is weak alone. Layered, they turn a four-degree
+    estimate into a confident line selection — which is all the blur window
+    needs to know.</p>
+  </div>
+</div>
+
+<h2>Honest limits</h2>
+
+<p>If you lean back, take off your glasses, or let the light fall unevenly on your
+face, the estimate degrades and the window will feel loose. That is the honest
+state of webcam gaze in 2026. The design answer is not to pretend otherwise: it is
+to make the window forgiving — a band, not a point — and to let the blur be soft
+enough that a slightly wrong line is still comfortable.</p>
+
+<p>There is also a privacy answer. Every image this system uses is processed in a
+window on your own machine, by JavaScript, and discarded on the next frame. There
+is no server. There is no account. The camera frames are never stored, never
+compressed, never sent anywhere — there is literally nowhere in this extension
+for them to go.</p>
+
+<h2>Keep reading</h2>
+
+<p>This is the last screenful. If the window has been tracking you down through
+these paragraphs — settling on each line, gliding to the next when your eyes
+move, holding still while your head shifts a little — then the core loop works,
+and the rest is tuning: the blur amount, the window height, the softness of the
+edges, the speed of the glide.</p>
+
+<p>Those knobs are in the popup. The defaults are a starting point, not a
+position. Set the window to one line for a narrow tunnel of focus, or to three
+or four lines to soften the effect into a gentle spotlight. Blur at 4 pixels is
+a veil; blur at 14 is a wall. Find the setting where the page feels quieter
+without feeling hidden.</p>
+
+<p class="fine">Foveo test article · self-contained, no external resources ·
+the text you are reading is about exactly what is happening to your eyes while
+you read it.</p>
+
+</main>
+</body>
+</html>

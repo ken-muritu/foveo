@@ -1,0 +1,30 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Local experimentation
+scratch/
+*.log
+node_modules/
+
+# --- secrets and local data (never commit) ---
+.env
+.env.*
+*.env
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.pem
+*.key
+*.keystore
+*.jks
+google-services.json
+GoogleService-Info.plist
+.vercel/
+node_modules/
+
+# fetched by scripts/fetch-webgazer.sh, not redistributed (GPLv3)
+src/vendor/webgazer.js

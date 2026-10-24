@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Foveo — Gaze Engine</title>
+  <link rel="stylesheet" href="gaze-engine.css">
+</head>
+<body>
+  <div id="hud">
+    <div class="hud-brand">Foveo <span>gaze engine</span></div>
+    <div class="hud-pills">
+      <span class="pill" id="pill-camera">camera: …</span>
+      <span class="pill" id="pill-face">face: …</span>
+      <span class="pill" id="pill-rate">— hz</span>
+    </div>
+    <div class="hud-note">Keep this window open while reading. It can be small and out of the way.</div>
+  </div>
+
+  <script src="../vendor/webgazer.js"></script>
+  <script src="one-euro.js"></script>
+  <script src="fixation.js"></script>
+  <script src="backend.js"></script>
+  <script src="calibration.js"></script>
+  <script src="gaze-engine.js"></script>
+</body>
+</html>

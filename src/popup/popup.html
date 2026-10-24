@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="brand">Foveo</div>
+    <div class="tag">gaze-contingent reading</div>
+  </header>
+
+  <button id="toggle" class="toggle" aria-pressed="false">
+    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+    <span id="toggle-label">Turn on</span>
+  </button>
+
+  <div id="status" class="status">
+    <div class="row"><span>Engine window</span><b id="st-engine">—</b></div>
+    <div class="row"><span>Calibration</span><b id="st-cal">—</b></div>
+  </div>
+
+  <div class="controls">
+    <label>
+      <span>Blur <output id="out-blur">6px</output></span>
+      <input type="range" id="in-blur" min="2" max="16" step="1" value="6">
+    </label>
+    <label>
+      <span>Window height <output id="out-window">1.6 lines</output></span>
+      <input type="range" id="in-window" min="1" max="4" step="0.2" value="1.6">
+    </label>
+    <label>
+      <span>Edge softness <output id="out-soft">28px</output></span>
+      <input type="range" id="in-soft" min="8" max="60" step="2" value="28">
+    </label>
+  </div>
+
+  <div class="footer">
+    <button id="recal" class="link">Recalibrate</button>
+    <span class="privacy">🔒 Camera frames never leave this machine.</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
