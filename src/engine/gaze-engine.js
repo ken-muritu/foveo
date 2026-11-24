@@ -25,7 +25,7 @@
     el.className = 'pill' + (tone ? ` ${tone}` : '');
   }
 
-  const backend = new WebGazerBackend();
+  let backend = new MediaPipeBackend();   // falls back to WebGazer if MediaPipe cannot start
   window.foveoBackend = backend;
 
   const euroX = new OneEuroFilter(1.1, 0.015, 1.0);
@@ -126,7 +126,16 @@
   async function main() {
     setPill(els.camera, 'camera: requesting…');
     try {
-      await backend.init({ onSample });
+      try {
+        await backend.init({ onSample });
+        port.postMessage({ type: 'log', level: 'info', text: 'mediapipe backend initialized' });
+      } catch (mpErr) {
+        port.postMessage({ type: 'log', level: 'warn', text: 'mediapipe failed, using webgazer: ' + mpErr });
+        if (backend.stream) backend.stream.getTracks().forEach((t) => t.stop());
+        backend = new WebGazerBackend();
+        window.foveoBackend = backend;
+        await backend.init({ onSample });
+      }
     } catch (e) {
       setPill(els.camera, 'camera: denied', 'bad');
       els.note.textContent =
@@ -135,7 +144,7 @@
       return;
     }
     setPill(els.camera, 'camera: on', 'ok');
-    port.postMessage({ type: 'log', level: 'info', text: 'webgazer backend initialized' });
+    port.postMessage({ type: 'log', level: 'info', text: (backend.constructor.name) + ' ready' });
 
     const wantCalibrate = location.hash === '#calibrate';
     const { foveoCalibration } = await api.storage.local.get('foveoCalibration');

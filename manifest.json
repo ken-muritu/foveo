@@ -4,18 +4,28 @@
   "version": "0.1.0",
   "description": "Gaze-contingent reading assistant: keeps the line you're reading sharp and softly blurs the rest. All gaze processing stays on your machine.",
   "minimum_chrome_version": "121",
-  "permissions": ["storage", "tabs", "scripting"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "background": {
     "service_worker": "src/background/service-worker.js",
-    "scripts": ["src/background/service-worker.js"]
+    "scripts": [
+      "src/background/service-worker.js"
+    ]
   },
   "browser_specific_settings": {
     "gecko": {
       "id": "foveo@ken-muritu.dev",
       "strict_min_version": "140.0",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": [
+          "none"
+        ]
       }
     }
   },
@@ -37,21 +47,31 @@
   },
   "commands": {
     "_execute_action": {
-      "suggested_key": { "default": "Alt+Shift+F", "mac": "Alt+Shift+F" },
+      "suggested_key": {
+        "default": "Alt+Shift+F",
+        "mac": "Alt+Shift+F"
+      },
       "description": "Open the Foveo panel"
     }
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "<all_urls>"
+      ],
       "js": [
         "src/content/lines.js",
         "src/content/fusion.js",
         "src/content/overlay.js",
         "src/content/content.js"
       ],
-      "css": ["src/content/content.css"],
+      "css": [
+        "src/content/content.css"
+      ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
 }

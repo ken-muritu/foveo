@@ -168,7 +168,7 @@
         meanPx: Math.round(mean),
         p95Px: Math.round(p95),
         dotsClicked: GRID.length * CLICKS_PER_DOT,
-        engine: 'webgazer-2.0.1',
+        engine: (this.backend && this.backend.constructor && this.backend.constructor.name) || 'unknown',
       };
 
       const finish = async () => {

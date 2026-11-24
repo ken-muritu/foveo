@@ -28,3 +28,6 @@ node_modules/
 
 # fetched by scripts/fetch-webgazer.sh, not redistributed (GPLv3)
 src/vendor/webgazer.js
+
+# fetched by scripts/fetch-mediapipe.sh (Apache-2.0; ~30 MB wasm)
+src/vendor/mediapipe/

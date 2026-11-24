@@ -29,11 +29,16 @@ content script: line-band detection → fusion stack → backdrop-blur overlay
 
 ## Quick start (load unpacked)
 
-First fetch the gaze library (WebGazer.js 2.0.1, GPLv3, not included in this repo):
+First fetch the gaze libraries (not included in this repo):
 
 ```bash
-./scripts/fetch-webgazer.sh   # downloads it from the WebGazer repo and checks its SHA-256
+./scripts/fetch-mediapipe.sh  # MediaPipe Face Landmarker 1.2.3 (Apache-2.0) + model, ~19 MB; the default backend
+./scripts/fetch-webgazer.sh   # optional fallback: WebGazer.js 2.0.1 (GPLv3), SHA-256 checked
 ```
+
+The engine tries MediaPipe first (head pose + iris position -> ridge regression trained by the
+calibration clicks) and falls back to WebGazer if it cannot start. Run the maths tests with
+`node --test test/gaze-model.test.js`.
 
 **Chrome:** `chrome://extensions` → toggle **Developer mode** → **Load unpacked** →
 select this repo's root (the folder containing `manifest.json`).
