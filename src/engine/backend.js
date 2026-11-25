@@ -57,6 +57,13 @@ class WebGazerBackend {
     this.ready = true;
   }
 
+  /** Drop every calibration sample (fresh calibration). */
+  reset() {
+    if (typeof webgazer !== 'undefined' && typeof webgazer.clearData === 'function') {
+      try { webgazer.clearData(); } catch (_) { /* nothing stored yet */ }
+    }
+  }
+
   recordPoint(x, y) {
     if (!this.ready) return;
     webgazer.recordScreenPosition(x, y, 'click');

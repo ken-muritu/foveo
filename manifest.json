@@ -1,13 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Foveo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Gaze-contingent reading assistant: keeps the line you're reading sharp and softly blurs the rest. All gaze processing stays on your machine.",
   "minimum_chrome_version": "121",
   "permissions": [
     "storage",
     "tabs",
-    "scripting"
+    "scripting",
+    "activeTab"
   ],
   "host_permissions": [
     "<all_urls>"

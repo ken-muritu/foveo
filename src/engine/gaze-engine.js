@@ -63,46 +63,37 @@
 
   // ---- HUD meters ---------------------------------------------------------
 
+  // "face" and "hz" describe what the camera sees. Before calibration the
+  // model has nothing to predict with, so gaze samples alone would read as
+  // "searching / 0 hz" even with a face in perfect view.
   setInterval(() => {
     if (!backend.ready) return;
     const now = performance.now();
-    setPill(els.face, now - lastSampleAt < 900 ? 'face: locked' : 'face: searching',
-      now - lastSampleAt < 900 ? 'ok' : 'warn');
     const cutoff = now - 1000;
-    const hz = sampleTimes.filter((s) => s > cutoff).length;
+    const faceAt = typeof backend.lastFaceAt === 'number' ? backend.lastFaceAt : lastSampleAt;
+    const times = Array.isArray(backend.faceTimes) ? backend.faceTimes : sampleTimes;
+    const locked = now - faceAt < 900;
+    setPill(els.face, locked ? 'face: locked' : 'face: searching', locked ? 'ok' : 'warn');
+    const hz = times.filter((s) => s > cutoff).length;
     setPill(els.rate, `${hz} hz`, hz >= 15 ? 'ok' : (hz > 0 ? 'warn' : 'bad'));
   }, 500);
 
-  // Keep the stored screen-space origin honest if the engine window is moved
-  // (client coords are unaffected by moves, so a fresh origin is all the
-  // content script needs). A *resize* genuinely invalidates the regression —
-  // flag it instead of silently drifting.
-  let resized = false;
-  window.addEventListener('move', async () => {
-    if (!calibratedOrigin) return;
-    calibratedOrigin = { x: window.screenLeft, y: window.screenTop };
-    const { foveoCalibration } = await api.storage.local.get('foveoCalibration');
-    if (foveoCalibration) {
-      foveoCalibration.originX = calibratedOrigin.x;
-      foveoCalibration.originY = calibratedOrigin.y;
-      await api.storage.local.set({ foveoCalibration });
-    }
-  });
-  window.addEventListener('resize', () => {
-    if (!calibratedOrigin || resized) return;
-    resized = true;
-    els.note.textContent = 'Window resized — calibration may drift. Recalibrate from the Foveo popup if the window feels off.';
-    setPill(els.camera, 'camera: resized', 'warn');
-  });
+  // The model maps your face to coordinates in this window *as it was placed
+  // during calibration*, so the stored origin must stay fixed: moving the
+  // small window out of the way later changes nothing about where you look.
+  // Resizing is harmless for the same reason.
 
   // ---- Startup ------------------------------------------------------------
 
-  async function startStreaming(origin) {
+  // ---- Startup ------------------------------------------------------------
+
+  async function startStreaming(origin, accuracyPx) {
     calibratedOrigin = origin;
     streaming = true;
     port.postMessage({
       type: 'phase',
       phase: 'ready',
+      accuracyPx: typeof accuracyPx === 'number' ? accuracyPx : undefined,
       shrinkRect: { width: 340, height: 180 },
     });
     setPill(els.camera, 'camera: on', 'ok');
@@ -115,9 +106,7 @@
     const cal = new FoveoCalibration(backend, {
       onStatus: ({ message }) => { els.note.textContent = message; },
       onDone: async ({ meanPx, origin }) => {
-        await startStreaming(origin);
-        port.postMessage({ type: 'phase', phase: 'ready', accuracyPx: meanPx,
-          shrinkRect: { width: 340, height: 180 } });
+        await startStreaming(origin, meanPx);
       },
     });
     await cal.run();

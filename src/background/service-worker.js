@@ -32,9 +32,7 @@ async function ensureEngine(calibrate) {
     if (calibrate && enginePort) {
       enginePort.postMessage({ type: 'mode', mode: 'calibrate' });
       try {
-        await api.windows.update(state.engineWindowId, {
-          focused: true, width: 1100, height: 760,
-        });
+        await api.windows.update(state.engineWindowId, { focused: true, state: 'maximized' });
       } catch (_) { /* window already gone */ }
     } else {
       try { await api.tabs.update(state.engineTabId, { active: true }); } catch (_) {}
@@ -44,13 +42,11 @@ async function ensureEngine(calibrate) {
   }
 
   const url = api.runtime.getURL(ENGINE_URL + (calibrate ? '#calibrate' : ''));
-  const win = await api.windows.create({
-    url,
-    type: 'popup',
-    focused: true,
-    width: 1100,
-    height: 760,
-  });
+  // Calibrate maximized: the model learns the screen area you actually read
+  // in, instead of extrapolating beyond a small window.
+  const win = await api.windows.create(calibrate
+    ? { url, type: 'popup', focused: true, state: 'maximized' }
+    : { url, type: 'popup', focused: true, width: 340, height: 180 });
   state.engineWindowId = win.id;
   state.engineTabId = win.tabs && win.tabs[0] ? win.tabs[0].id : null;
   state.phase = 'calibrating';
@@ -108,6 +104,7 @@ api.runtime.onConnect.addListener((port) => {
           // Calibration done: let the engine window shrink out of the way.
           try {
             await api.windows.update(state.engineWindowId, {
+              state: 'normal',
               width: msg.shrinkRect.width,
               height: msg.shrinkRect.height,
             });
@@ -204,7 +201,8 @@ api.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       }
       state.foveoOn = true;
       const [tab] = await api.tabs.query({ active: true, currentWindow: true });
-      if (tab && tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('chrome-extension://')) {
+      const internal = /^(chrome|chrome-extension|moz-extension|about|edge|view-source):/;
+      if (tab && tab.url && !internal.test(tab.url)) {
         if (!contentPorts.has(tab.id)) {
           // Page was loaded before the extension, or content script missed:
           // inject it now.

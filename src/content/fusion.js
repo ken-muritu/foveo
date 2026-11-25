@@ -14,6 +14,20 @@
 (function () {
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
+  // Screen position of this page's viewport (CSS px). Firefox reports it
+  // exactly; elsewhere, estimate it from the outer frame (side borders are
+  // symmetric; everything else above the viewport is toolbars).
+  function viewportOrigin() {
+    if (typeof window.mozInnerScreenX === 'number') {
+      return { x: window.mozInnerScreenX, y: window.mozInnerScreenY };
+    }
+    const border = Math.max(0, (window.outerWidth - window.innerWidth) / 2);
+    return {
+      x: window.screenX + border,
+      y: window.screenY + Math.max(0, window.outerHeight - window.innerHeight - border),
+    };
+  }
+
   class FoveoFusion {
     constructor(lines) {
       this.lines = lines;
@@ -53,8 +67,9 @@
       if (!this.cal) return null;
 
       // 1 — engine client coords -> screen -> this viewport, plus drift trim.
-      const gx = msg.x + this.cal.originX - window.screenX + this.driftX;
-      const gy = msg.y + this.cal.originY - window.screenY + this.driftY;
+      const vo = viewportOrigin();
+      const gx = msg.x + this.cal.originX - vo.x + this.driftX;
+      const gy = msg.y + this.cal.originY - vo.y + this.driftY;
 
       // 4 — gaze left the page entirely: hold.
       const m = 40;

@@ -9,6 +9,7 @@ const els = {
   toggleLabel: $('toggle-label'),
   stEngine: $('st-engine'),
   stCal: $('st-cal'),
+  stAccess: $('st-access'),
   blur: $('in-blur'), outBlur: $('out-blur'),
   window: $('in-window'), outWindow: $('out-window'),
   soft: $('in-soft'), outSoft: $('out-soft'),
@@ -16,6 +17,17 @@ const els = {
 };
 
 let settings = null;
+
+// Firefox does not grant Manifest V3 host permissions at install, so without
+// this the reading-page script never runs. activeTab (granted by opening this
+// popup) still covers the current tab; all-sites access is asked for once.
+const ALL_SITES = { origins: ['<all_urls>'] };
+let allSites = true;
+
+function renderAccess() {
+  els.stAccess.textContent = allSites ? 'all sites' : 'this tab only';
+  els.stAccess.className = allSites ? 'good' : '';
+}
 
 function renderStatus(status, cal) {
   els.stEngine.textContent = status.engineOpen
@@ -50,13 +62,23 @@ async function refresh() {
     api.runtime.sendMessage({ type: 'status' }),
     api.storage.local.get(['foveoSettings', 'foveoCalibration']),
   ]);
+  try { allSites = await api.permissions.contains(ALL_SITES); } catch (_) { allSites = true; }
+  renderAccess();
   settings = stored.foveoSettings || {};
   renderSettings();
   renderStatus(status, stored.foveoCalibration);
 }
 
 els.toggle.addEventListener('click', async () => {
-  const res = await api.runtime.sendMessage({ type: 'toggle' });
+  // Both calls start synchronously inside the click, which the permission
+  // prompt requires; the toggle is already sent if the prompt closes the popup.
+  const pending = api.runtime.sendMessage({ type: 'toggle' });
+  if (!allSites) {
+    api.permissions.request(ALL_SITES)
+      .then((granted) => { allSites = granted; renderAccess(); })
+      .catch(() => { /* dismissed */ });
+  }
+  const res = await pending;
   if (res && res.needsCalibration) {
     els.stCal.textContent = 'calibrating…';
   }

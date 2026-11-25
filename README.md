@@ -43,20 +43,27 @@ calibration clicks) and falls back to WebGazer if it cannot start. Run the maths
 **Chrome:** `chrome://extensions` → toggle **Developer mode** → **Load unpacked** →
 select this repo's root (the folder containing `manifest.json`).
 
-**Firefox:** `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** →
-select `manifest.json` in this repo's root. (Temporary add-ons are removed when
-Firefox closes — for a permanent install, submit to
-[addons.mozilla.org](https://addons.mozilla.org).)
+**Firefox (140+):** `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** →
+select `manifest.json` in this repo's root (or the built `foveo-<version>.zip`).
+(Temporary add-ons are removed when Firefox closes — for a permanent install,
+submit to [addons.mozilla.org](https://addons.mozilla.org).)
+
+Firefox does not grant site access to Manifest V3 add-ons at install. The first
+time you press **Turn on**, Foveo asks for access to all sites; allow it so the
+reading window works on every page. If you decline, it still works on the tab you
+turned it on from (the popup shows **Site access: this tab only**). Firefox never
+lets add-ons into local `file://` pages, so test with a web page, or serve
+`test/` with `python -m http.server` and open `http://127.0.0.1:8000/article.html`.
 
 Then, in either browser:
 
 1. Click the Foveo toolbar icon → **Turn on**. The engine window opens and asks for
    camera permission (the ordinary browser prompt).
 2. **Calibrate.** Keep the engine window maximized, sit ~50–70 cm from the screen,
-   face it straight, and click each of the nine dots as instructed. You'll get an
+   face it straight, and click each of the nine dots as instructed while looking at it. You'll get an
    accuracy verdict in pixels.
-3. Open any text-heavy page (or `test/article.html`, included for this) and press
-   the Foveo toggle. The blur window appears and follows your reading.
+3. Press **Start reading**; the engine window shrinks out of the way (leave it open,
+   move it anywhere). Open any text-heavy page and press the Foveo toggle again. The blur window appears and follows your reading.
 
 Tune the feel from the popup: **blur** (2–16 px), **window height** (1–4 lines),
 **edge softness** (8–60 px). Settings persist via `chrome.storage.local`.

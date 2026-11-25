@@ -2,8 +2,8 @@
  *
  * Flow:
  *   0. Size check — dots need screen spread; the engine window must be large.
- *   1. Record the viewport origin (window.screenLeft/screenTop) — this anchors
- *      WebGazer's client-coord predictions to screen space.
+ *   1. Record the viewport's screen origin — this anchors the backend's
+ *      client-coord predictions to screen space.
  *   2. Training: nine dots on a 3x3 grid (center first), 5 clicks each.
  *   3. Accuracy probe: nine fresh dots; measure prediction error at click time.
  *   4. Verdict + save.
@@ -31,6 +31,20 @@
       note: 'Try again: face the screen straight on, steady head, even light on your face.' },
   ];
 
+  // Screen position of this page's viewport (CSS px). Firefox reports it
+  // exactly; elsewhere, estimate it from the outer frame (side borders are
+  // symmetric; everything else above the viewport is toolbars).
+  function viewportOrigin() {
+    if (typeof window.mozInnerScreenX === 'number') {
+      return { x: window.mozInnerScreenX, y: window.mozInnerScreenY };
+    }
+    const border = Math.max(0, (window.outerWidth - window.innerWidth) / 2);
+    return {
+      x: window.screenX + border,
+      y: window.screenY + Math.max(0, window.outerHeight - window.innerHeight - border),
+    };
+  }
+
   class Calibration {
     constructor(backend, { onStatus, onDone }) {
       this.backend = backend;
@@ -53,6 +67,10 @@
         return;
       }
 
+      // Fresh calibration: old samples (other lighting, other seat) would
+      // only pull the new fit off.
+      if (typeof this.backend.reset === 'function') this.backend.reset();
+
       this._buildLayer();
       this._prevOnSample = this.backend.onSample;
       this.backend.onSample = (s) => {
@@ -60,10 +78,10 @@
         if (this._prevOnSample) this._prevOnSample(s);
       };
 
-      // Step 1 — origin. window.screenLeft/screenTop give the viewport's screen
-      // position INCLUDING browser chrome, which is exactly what the content
-      // script's transform needs (both sides include chrome → offsets cancel).
-      this.origin = { x: window.screenLeft, y: window.screenTop };
+      // Step 1 — origin: where this viewport's (0,0) sits on screen. The
+      // reading tab subtracts its own viewport origin, so the two windows'
+      // different toolbar heights cancel out exactly.
+      this.origin = viewportOrigin();
 
       // Step 2 — training.
       this.onStatus({ phase: 'training', message: 'Click each dot 5 times. Look straight at it.' });
